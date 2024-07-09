@@ -11,7 +11,6 @@ $calibriDirPath = $foundDirectories.FullName
 #Creates variables with the paths for ease of use
 $PowerpointPath = Join-Path -Path $calibriDirPath -ChildPath "\Blank.potx"
 $WordPath = Join-Path -Path $calibriDirPath -ChildPath "\Normal.dotm"
-$OutlookPath = Join-Path -Path $calibriDirPath -ChildPath "\NormalEmail.dotm"
 
 #BEGIN Excel Registry for all users
 #Script from https://www.pdq.com/blog/modifying-the-registry-users-powershell/
@@ -33,7 +32,6 @@ Foreach ($item in $ProfileList) {
         $Username = $item.Username
         Copy-Item $PowerpointPath C:\Users\$Username\AppData\Roaming\Microsoft\Templates
         Copy-Item $WordPath C:\Users\$Username\AppData\Roaming\Microsoft\Templates
-        Copy-Item $OutlookPath C:\Users\$Username\AppData\Roaming\Microsoft\Templates
     }
 }
  
