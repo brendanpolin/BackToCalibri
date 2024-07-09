@@ -3,9 +3,9 @@ This Powershell Script will revert all of the default fonts in the O365 apps bac
 
 # Requirements & Instructions
 Create a folder called BackToCalibri on the C:\ drive
-Put your Blank.potx, Normal.dotm, and NormalEmail.dotm in there. 
+Put your Blank.potx and Normal.dotm in there. 
 
-_The script will run without these, though powerpoint & Word won't configure though I'm not entirely sure about outlook_
+_The script will run without these, though powerpoint & Word won't configure_
 
 Then simply run the script as administrator, and it will take care of the rest
 ```
