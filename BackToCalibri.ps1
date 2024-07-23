@@ -16,17 +16,21 @@ $WordPath = Join-Path -Path $calibriDirPath -ChildPath "\Normal.dotm"
 #Script from https://www.pdq.com/blog/modifying-the-registry-users-powershell/
 
 # Regex pattern for SIDs
-$PatternSID = 'S-1-5-21-\d+-\d+\-\d+\-\d+$'
+#$PatternSID = 'S-1-5-21-\d+-\d+\-\d+\-\d+$'
+$PatternSID = @('S-1-5-21-\d+-\d+\-\d+\-\d+$',	 # SID of AD Accounts
+				            'S-1-12-1-\d+-\d+-\d+-\d+$')	   # SID of Entra Accounts
  
 # Get Username, SID, and location of ntuser.dat for all users
-$ProfileList = Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\*' | Where-Object {$_.PSChildName -match $PatternSID} | 
-    Select  @{name="SID";expression={$_.PSChildName}}, 
-            @{name="UserHive";expression={"$($_.ProfileImagePath)\ntuser.dat"}}, 
-            @{name="Username";expression={$_.ProfileImagePath -replace '^(.*[\\\/])', ''}}
-# Get all user SIDs found in HKEY_USERS (ntuder.dat files that are loaded)
-$LoadedHives = Get-ChildItem Registry::HKEY_USERS | ? {$_.PSChildname -match $PatternSID} | Select-Object @{name="SID";expression={$_.PSChildName}}
+Foreach ($pattern in $PatternSID) {
+    $ProfileList += Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\*' | Where-Object {$_.PSChildName -match $pattern} | 
+        Select  @{name="SID";expression={$_.PSChildName}}, 
+                @{name="UserHive";expression={"$($_.ProfileImagePath)\ntuser.dat"}}, 
+                @{name="Username";expression={$_.ProfileImagePath -replace '^(.*[\\\/])', ''}}
+    # Get all user SIDs found in HKEY_USERS (ntuder.dat files that are loaded)
+    $LoadedHives += Get-ChildItem Registry::HKEY_USERS | ? {$_.PSChildname -match $pattern} | Select-Object @{name="SID";expression={$_.PSChildName}}
+}
 
-#This checks their SID lenth to make sure it's not a service account, and if it's not then it will copy over the templates
+#This checks their SID length to make sure it's not a service account, and if it's not then it will copy over the templates
 Foreach ($item in $ProfileList) {
     if ($item.SID.Length -gt 10) {
         $Username = $item.Username
